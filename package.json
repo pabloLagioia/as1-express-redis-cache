@@ -1,0 +1,11 @@
+{
+  "name": "as1-express-redis-cache",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Pablo Lagioia",
+  "license": "ISC",
+  "dependencies": {
+    "async-redis": "^1.1.7"
+  }
+}
