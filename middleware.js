@@ -20,6 +20,7 @@ module.exports = ({ host, port, logger = require("./defaultLogger"), shouldCache
 
     if (!cache || !redisClient || !redisClient.connected) {
       logger.error(`Express-Redis-Cache: Cache unavailable: Not connected GET ${req.originalUrl}`);
+      res.header("Cache-Status", "unavailable");
       return next();
     }
 
@@ -30,6 +31,7 @@ module.exports = ({ host, port, logger = require("./defaultLogger"), shouldCache
 
     if (req.header("no-cache") === "yes") {
       logger.debug(`Express-Redis-Cache: No-cache GET: ${req.originalUrl} Client requested to not get cached data`);
+      res.header("Cache-Status", "bypassed");
       return next();
     }
 
@@ -75,6 +77,7 @@ module.exports = ({ host, port, logger = require("./defaultLogger"), shouldCache
     } catch(error) {
       logger.error(`Express-Redis-Cache: Unexpeted Error: ${error.message}`);
       //continue to next middleware to not break due to an error on the cache
+      res.header("Cache-Status", "unavailable");
       next();
     }
 
