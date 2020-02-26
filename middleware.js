@@ -43,14 +43,23 @@ module.exports = ({ host, port, logger = require("./defaultLogger"), shouldCache
 
       if (cachedData) {
 
-        logger.debug(`Express-Redis-Cache: GET from cache: ${req.originalUrl}`);
+        try {
+          
+          logger.debug(`Express-Redis-Cache: GET from cache: ${req.originalUrl}`);
+          
+          const headers = cachedData.headers;
+          
+          res.header(headers);
+          res.header("Cache-Status", "hit");
+          
+          res.status(cachedData.status).end(cachedData.body);
 
-        const headers = cachedData.headers;
-    
-        res.header(headers);
-        res.header("Cache-Status", "hit");
-    
-        res.status(cachedData.status).end(cachedData.body);
+        } catch (error) {
+          logger.error(`Express-Redis-Cache: Unable to retrieve element from cache: ${error}`);
+          res.header(headers);
+          res.header("Cache-Status", "error");
+          res.status(500).end();
+        }
 
         return;
 
@@ -65,7 +74,13 @@ module.exports = ({ host, port, logger = require("./defaultLogger"), shouldCache
       res.end = function(data, encoding, callback) {
 
         if (shouldCache(res.statusCode)) {
-          cache.add({ url, "headers": res._headers, "status": res.statusCode, "body": data, expiresAfterSeconds });
+
+          try {
+            cache.add({ url, "headers": res._headers, "status": res.statusCode, "body": data, expiresAfterSeconds });
+          } catch (error) {
+            logger.error(`Express-Redis-Cache: Add to cache error: ${error}`);
+          }
+           
         }
     
         res.originalEnd(data, encoding, callback);

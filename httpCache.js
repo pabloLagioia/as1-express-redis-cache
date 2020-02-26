@@ -1,6 +1,6 @@
 module.exports = ({ redisClient }) =>  {
 
-  const add = ({ url, headers, status, body, expiresAfterSeconds }) => {
+  const add = ({ url, headers, status, body = "", expiresAfterSeconds }) => {
 
     let stringifiedBody = body;
 
