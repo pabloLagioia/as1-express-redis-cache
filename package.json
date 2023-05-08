@@ -6,6 +6,6 @@
   "author": "Pablo Lagioia",
   "license": "ISC",
   "dependencies": {
-    "async-redis": "^1.1.7"
+    "async-redis": "^2.0.0"
   }
 }
